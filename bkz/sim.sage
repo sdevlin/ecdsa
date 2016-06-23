@@ -32,7 +32,7 @@ block_size = args.block_size
 conn = sqlite3.connect('bkz.db')
 cursor = conn.cursor()
 
-cursor.execute('insert into trials (q, x, b, d, logW, seed, block_size) values (?, ?, ?, ?, ?, ?, ?)', (int(q), int(x), int(b), int(d), int(logW), int(seed), int(block_size)))
+cursor.execute('insert into trials (q, x, b, d, logW, seed, block_size) values (?, ?, ?, ?, ?, ?, ?)', (str(q), str(x), int(b), int(d), int(logW), int(seed), int(block_size)))
 trial_id = cursor.lastrowid
 
 
