@@ -1,1 +1,3 @@
 spd
+*.db
+*.sage.py
