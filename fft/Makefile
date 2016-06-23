@@ -1,0 +1,3 @@
+CPPFLAGS += -I/usr/local/include
+LDFLAGS += -L/usr/local/lib
+LDLIBS += -lfftw3
