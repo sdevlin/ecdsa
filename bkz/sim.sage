@@ -3,13 +3,13 @@ from itertools import islice
 
 import sqlite3
 
-load('../ecdsa.sage')
+load('../ecdsa_utils.sage')
 
 def transpose(tups, type=list):
     '[[1,2],[3,4]] => [[1,3],[2,4]]'
     return map(type, zip(*tups))
 
-def center(k):
+def center(Fq, k):
     k = lift(Fq(k))
     if k > q/2:
         k -= q
@@ -25,7 +25,7 @@ def main(q, x, b, d, logW, seed, block_size, conn):
     x = Fq(x)
     W = 2^logW
 
-    data = list(islice(gendata(q, x, b, seed), d))
+    data = list(islice(gendata(Fq, q, x, b, seed), d))
     ks, hs, cs = transpose(data, vector)
 
     B = matrix(ZZ, d+1)
@@ -38,9 +38,9 @@ def main(q, x, b, d, logW, seed, block_size, conn):
 
     for v in B:
         A = v[:-1] / W
-        cA = center(v[-1])
-        hA = center(hs * A)
-        kA = center(ks * A)
+        cA = v[-1]  #center(Fq, v[-1])
+        hA = hs * A #center(Fq, hs * A)
+        kA = ks * A #center(Fq, ks * A)
         cursor.execute('insert into points (trial_id, kA, hA, cA, G1, Ginf, C, logkA, A) values (?, ?, ?, ?, ?, ?, ?, ?, ?)', (trial_id, str(kA), str(hA), str(cA), int(A.norm(1)), int(A.norm(Infinity)), int(cA.nbits()), float(log(abs(kA), 2)), str(A)))
 
 if __name__ == "__main__":
