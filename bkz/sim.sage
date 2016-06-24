@@ -1,5 +1,6 @@
 from argparse import ArgumentParser
 from itertools import islice
+load('../utils/timeutil.py')
 
 import sqlite3
 
@@ -14,6 +15,10 @@ def center(Fq, k):
     if k > q/2:
         k -= q
     return k
+
+@timeit
+def compute_bkz(B, block_size, alg="NTL", fp='fp', use_givens=True):
+    return B.BKZ(block_size=block_size, algorithm='NTL', fp='fp', use_givens=True)
 
 def main(q, x, b, d, logW, seed, block_size, conn):
     cursor = conn.cursor()
@@ -34,7 +39,9 @@ def main(q, x, b, d, logW, seed, block_size, conn):
         B[i,d] = cs[i]
     B[d,d] = q
 
-    B = B.BKZ(block_size=block_size, algorithm='NTL', fp='fp', use_givens=True)
+    #B = B.BKZ(block_size=block_size, algorithm='NTL', fp='fp', use_givens=True)
+    (B, elapsed_time) = compute_bkz(B, block_size = block_size)
+    cursor.execute('update trials set time_elapsed = ? where id = ?', (float(elapsed_time), trial_id))
 
     for v in B:
         A = v[:-1] / W
