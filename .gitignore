@@ -1,4 +1,5 @@
 spd
+fft_bindings/build
 *.db
 *.sage.py
 *.png
