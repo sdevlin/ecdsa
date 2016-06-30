@@ -23,7 +23,6 @@ def gendata(x, C, b, seed=None):
         k = ZZ(k) - round((q-1)/2^(b+1))
         yield (h, c)
 
-
 def recover(data, C):
     n = 2*C
 
@@ -43,7 +42,6 @@ def dofft(data, n):
         the_tuple = tuple(CC(e^(2*pi*I*h/q)))
         print >>p.stdin, c
         print >>p.stdin, the_tuple
-        print "Setting: %f|%f" % (the_tuple[0], the_tuple[1])
         python_fft.setitem(c, the_tuple[0], the_tuple[1])
     print "Finished fft.c"
 
@@ -64,5 +62,5 @@ x = 3848019252674873111557962765415730003230256936899687699625784298202064411596
 C = 2^25
 b = 1
 
-data = list(islice(gendata(x, C, b), 500))
+data = list(islice(gendata2(x, C, b), 500))
 recover(data, C)

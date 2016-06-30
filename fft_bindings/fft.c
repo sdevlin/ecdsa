@@ -64,7 +64,6 @@ FFT_setitem(FFT* self, PyObject *args)
 
     if (!PyArg_ParseTuple(args, "idd", &pos, &a, &b))
         return NULL;
-    printf("Setting %f|%f\n", a, b);
     self->data[pos][0] = a;
     self->data[pos][1] = b;
     return Py_BuildValue("");
@@ -97,7 +96,7 @@ FFT_best_candidates(FFT* self, PyObject *args)
         ncands = self->size;
 
     cands = malloc(ncands * sizeof(cand));
-    for (i = 0; i < ncands; i += 1) {
+    for (i = 0; i < self->size; i += 1) {
         v = self->data[i][0]*self->data[i][0] + self->data[i][1]*self->data[i][1];
         if (v > cands[0].value) {
             cands[0].index = i;
