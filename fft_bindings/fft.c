@@ -64,6 +64,7 @@ FFT_setitem(FFT* self, PyObject *args)
 
     if (!PyArg_ParseTuple(args, "idd", &pos, &a, &b))
         return NULL;
+    printf("Setting %f|%f\n", a, b);
     self->data[pos][0] = a;
     self->data[pos][1] = b;
     return Py_BuildValue("");
@@ -112,7 +113,7 @@ FFT_best_candidates(FFT* self, PyObject *args)
         PyObject *tmp = PyTuple_New(2);
         PyTuple_SetItem(tmp, 0, PyInt_FromSsize_t(cands[i].index));
         PyTuple_SetItem(tmp, 1, PyFloat_FromDouble(cands[i].value));
-        PyList_SetItem(toreturn, ncands - 1 - i, tmp);
+        PyList_SetItem(toreturn, i, tmp);
     }
     return toreturn;
 }

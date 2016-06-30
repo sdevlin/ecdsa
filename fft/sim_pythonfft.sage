@@ -43,6 +43,7 @@ def dofft(data, n):
         the_tuple = tuple(CC(e^(2*pi*I*h/q)))
         print >>p.stdin, c
         print >>p.stdin, the_tuple
+        print "Setting: %f|%f" % (the_tuple[0], the_tuple[1])
         python_fft.setitem(c, the_tuple[0], the_tuple[1])
     print "Finished fft.c"
 
