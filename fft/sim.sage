@@ -13,7 +13,7 @@ def bitdiff(a, b):
 
 def normalize_it(x, C):
     blah = ZZ(x)
-    the_bits = blah.bits()[:C]
+    the_bits = blah.bits()[-C:][::-1]
     the_bits.extend([0] * (C - len(the_bits)))
     return the_bits
 
