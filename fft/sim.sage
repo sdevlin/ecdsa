@@ -54,17 +54,6 @@ def runsim(q, x, b, C, L, seed, ncands, cursor):
 
     candidates = our_fft.best_candidates(ncands)
     for (m, val) in reversed(candidates):
-        print (m, val)
-        if abs(m) > n:
-            print "DOING IT ON THE OTHER SHIT"
-            p = Popen(['./fft', str(n), str(len(data))], stdin=PIPE, stdout=PIPE)
-            for (k, hj, cj) in data:
-                bias = tuple(CC(e^(2*pi*I*int(hj) / q)))
-                print >>p.stdin, cj + bC
-                print >>p.stdin, bias
-            for line in p.stdout.readlines():
-                print (ZZ(line), ZZ(round(ZZ(line)*q/n)))
-
         meow = int(round(m * q / n))
         score = 1 - bitdiff(x, meow) / C
         cursor.execute('insert into points (trial_id, m, bias, score) values (?,?,?,?)', (trial_id, int(m), float(val), float(score)))
