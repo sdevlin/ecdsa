@@ -9,12 +9,18 @@ load('../utils/timeutil.py')
 import sqlite3
 
 def bitdiff(a, b):
-    t = xor(int(a), int(b))
-    count = 0
-    while t:
-        t = t & (t-1)
-        count += 1
-    return count
+    return sum([0 if x == y else 1 for (x,y) in zip(a,b)])
+
+def normalize_it(x, C):
+    blah = ZZ(x)
+    the_bits = blah.bits()[:C]
+    the_bits.extend([0] * (C - len(the_bits)))
+    return the_bits
+
+def scoreit(x, guess, C):
+    x_normalized = normalize_it(x, C)
+    guess_normalized = normalize_it(guess, C)
+    return 1 - bitdiff(x_normalized ,guess_normalized) / float(C)
 
 def gendata(Fq, C, q, x, b, seed=None):
     rng = Random(seed)
@@ -51,11 +57,11 @@ def runsim(q, x, b, C, L, seed, ncands, cursor):
     
     (_, elapsed_time) = compute_fft(our_fft)
     cursor.execute('update trials set time_elapsed = ? where id = ?', (float(elapsed_time), trial_id))
-
+    print "and we are done..."
     candidates = our_fft.best_candidates(ncands)
     for (m, val) in reversed(candidates):
         meow = int(round(m * q / n))
-        score = 1 - bitdiff(x, meow) / C
+        score = scoreit(x, meow, C) #1 - bitdiff(x, meow) / C
         cursor.execute('insert into points (trial_id, m, bias, score) values (?,?,?,?)', (trial_id, int(m), float(val), float(score)))
 
 if __name__ == "__main__":
