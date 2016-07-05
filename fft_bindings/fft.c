@@ -99,15 +99,17 @@ FFT_best_candidates(FFT* self, PyObject *args)
     int ncands = 10;
     int i;
     double v;
-    struct cand *cands;
+    struct cand cands[ncands];
     
     if (!PyArg_ParseTuple(args, "|i", &ncands))
         return NULL;
 
+    /*
     if (ncands > self->size)
         ncands = self->size;
 
     cands = malloc(ncands * sizeof(cand));
+    */
     for (i = 0; i < self->size; i += 1) {
         v = self->data[i][0]*self->data[i][0] + self->data[i][1]*self->data[i][1];
         if (v > cands[0].value) {
