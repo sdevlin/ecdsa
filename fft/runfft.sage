@@ -54,7 +54,6 @@ def runsim(q, x, b, C, L, seed, ncands, cursor):
     
     (_, elapsed_time) = compute_fft(our_fft)
     cursor.execute('update trials set time_elapsed = ? where id = ?', (float(elapsed_time), trial_id))
-    print "and we are done..."
     candidates = our_fft.best_candidates(ncands)
     for (m, val) in reversed(candidates):
         meow = int(round(m * q / n))

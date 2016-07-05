@@ -1,5 +1,6 @@
 spd
 fft_bindings/build
+*.db-journal
 *.db
 *.sage.py
 *.png
