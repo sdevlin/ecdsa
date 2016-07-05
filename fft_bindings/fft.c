@@ -47,7 +47,6 @@ FFT_init(FFT *self, PyObject *args, PyObject *kwds)
     int i;
     if (!PyArg_ParseTuple(args, "l", &self->size))
         return -1; 
-
     self->data = fftw_malloc(self->size * sizeof *self->data);
     for (i = 0; i < self->size; i += 1) {
         self->data[i][0] = 0;
@@ -67,6 +66,19 @@ FFT_setitem(FFT* self, PyObject *args)
     self->data[pos][0] = a;
     self->data[pos][1] = b;
     return Py_BuildValue("");
+}
+
+static PyObject*
+FFT_getitem(FFT*self, PyObject *args)
+{
+    int pos;
+    if (!PyArg_ParseTuple(args, "i", &pos))
+        return NULL;
+    int meow;
+    PyObject *tmp = PyTuple_New(2);
+    PyTuple_SetItem(tmp, 0, PyFloat_FromDouble(self->data[pos][0]));
+    PyTuple_SetItem(tmp, 1, PyFloat_FromDouble(self->data[pos][0]));
+    return tmp;
 }
 
 static PyObject*
@@ -110,7 +122,7 @@ FFT_best_candidates(FFT* self, PyObject *args)
 
     for (i = 0; i < ncands; i += 1) {
         PyObject *tmp = PyTuple_New(2);
-        PyTuple_SetItem(tmp, 0, PyInt_FromSsize_t(cands[i].index));
+        PyTuple_SetItem(tmp, 0, PyLong_FromSsize_t(cands[i].index));
         PyTuple_SetItem(tmp, 1, PyFloat_FromDouble(cands[i].value));
         PyList_SetItem(toreturn, i, tmp);
     }
@@ -121,6 +133,7 @@ static PyMethodDef FFT_methods[] = {
     {"inversefft", (PyCFunction)FFT_inversefft, METH_NOARGS, "Compute the inverse FFT"},
     {"best_candidates", (PyCFunction)FFT_best_candidates, METH_VARARGS, "Get the best supplied number of candidates (default 10)"},
     {"setitem", (PyCFunction)FFT_setitem, METH_VARARGS, "Set an item in the array"},
+    {"getitem", (PyCFunction)FFT_getitem, METH_VARARGS, "Get an item from the data array"},
     {NULL, NULL},
 };
 
@@ -128,6 +141,7 @@ static PyMemberDef FFT_members[] = {
     {"size", T_LONG, offsetof(FFT, size), READONLY, PyDoc_STR("size of the fft")},
     {0}
 };
+
 
 static PyTypeObject FFT_Type = {
     PyObject_HEAD_INIT(NULL)
