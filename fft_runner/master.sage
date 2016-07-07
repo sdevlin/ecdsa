@@ -22,7 +22,7 @@ if __name__ == "__main__":
     C = args.C
     Lmax = args.Lmax
     ncands = args.ncands
-    L = 10
+    L = 4000
 
     context = zmq.Context()
     zmq_socket = context.socket(zmq.PUSH)
