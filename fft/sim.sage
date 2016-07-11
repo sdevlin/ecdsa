@@ -15,7 +15,7 @@ if __name__ == "__main__":
     parser.add_argument('-C', type=ZZ, required=True, help='the exp of C (2^what), computing 2 * C sized FFT')
     parser.add_argument('-L', type=ZZ, required=True, help='the number of points to use in the calculation')
     parser.add_argument('--seed', type=ZZ, required=True, help='used to generate the secret key x and all (c, h, k) tuples')
-    parser.add_argument('--ncands', type=int, required=False, default=5, help='number of resultant candidates to save')
+    parser.add_argument('--ncands', type=int, required=False, default=10, help='number of resultant candidates to save')
 
     args = parser.parse_args()
 

@@ -35,6 +35,30 @@ def gendata(Fq, C, q, x, b, seed=None):
 def compute_fft(our_fft):
     return our_fft.inversefft()
 
+def runsim_nocursor(q, x, b, C, L, seed, ncands):
+    Fq = GF(q)
+    x = Fq(x)
+    bC = 2^C
+    n = 2 * bC
+    our_fft = FFT(n)
+
+    data = list(islice(gendata(Fq, bC, q, x, b, seed), L))
+
+    for (k, hj, cj) in data:
+        bias = CC(e^(2*pi*I*int(hj) / q))
+        our_fft.setitem(cj + bC, bias[0], bias[1])
+    
+    (_, elapsed_time) = compute_fft(our_fft)
+    #cursor.execute('update trials set time_elapsed = ? where id = ?', (float(elapsed_time), trial_id))
+    candidates = our_fft.best_candidates(ncands)
+
+    toret = {"q":str(q), "x":str(x), "b":int(b), "C":int(C), "L":int(L), "seed":int(seed), "time_elapsed":float(elapsed_time), "points":[]}
+    for (m, val) in reversed(candidates):
+        meow = int(round(m * q / n))
+        score = scoreit(x, meow, C)
+        toret["points"].append({"m":int(m), "bias":float(val), "score":float(score)})
+    return toret
+
 def runsim(q, x, b, C, L, seed, ncands, cursor):
     cursor = conn.cursor()
     cursor.execute('insert into trials (q, x, b, C, L, seed) values (?, ?, ?, ?, ?, ?)', (str(q), str(x), int(b), int(C), int(L), int(seed)))

@@ -1,7 +1,7 @@
 load('../fft/runfft.sage')
-import sqlite3
 import zmq
 from argparse import ArgumentParser
+import json
 
 if __name__ == "__main__":
 	parser = ArgumentParser(prog='slave.sage',
@@ -10,14 +10,16 @@ if __name__ == "__main__":
 	args = parser.parse_args()
 	db = args.db
 
-	conn = sqlite3.connect(db)
-
 	context = zmq.Context()
-	receiver = context.socket(zmq.PULL)
-	receiver.connect("tcp://127.0.0.1:5557")
+	receiver = context.socket(zmq.REQ)
+	receiver.connect("tcp://127.0.0.1:5550")
+
+	collector = context.socket(zmq.PUSH)
+	collector.bind("tcp://127.0.0.1:9800")
 
 	try:
 		while True:
+			receiver.send_string("READY!")
 			work = receiver.recv_json()
 			q = ZZ(work['q'])
 			x = ZZ(work['x'])
@@ -27,14 +29,13 @@ if __name__ == "__main__":
 			ncands = int(work['ncands'])
 			seed = int(work['seed'])
 
-			runsim(q, x, b, C, L, seed, ncands, conn)
-			conn.commit()
+			data = runsim_nocursor(q, x, b, C, L, seed, ncands)
+			collector.send_json(data)
 	except KeyboardInterrupt:
 		print "Stopping..."
 	except Exception as e:
 		print "Exception"
 		print e
 	finally:
-		conn.close()
 		receiver.close()
 

@@ -1,6 +1,27 @@
 from argparse import ArgumentParser
 import zmq
 import random
+from  multiprocessing import Process
+
+def pusher_man(port, q, x, b, C, Lmax, ncands):
+    context = zmq.Context()
+    zmq_socket = context.socket(zmq.PUSH)
+    zmq_socket.bind("tcp://127.0.0.1:5557")
+    try:
+        while True:
+            seed = random.randint(0, 1<<32)
+            job = {"q": str(q), "x": str(x), "b": str(b), "C": str(C), "L": str(L), "ncands": str(ncands), "seed": seed}
+            zmq_socket.send_json(job)
+            L += 10
+            if L > Lmax:
+                L = 10
+    except KeyboardInterrupt:
+        print "Stopping..."
+    except Exception as e:
+        print "Exception"
+        print e
+    finally:
+        zmq_socket.close()
 
 
 if __name__ == "__main__":
@@ -25,10 +46,11 @@ if __name__ == "__main__":
     L = 4000
 
     context = zmq.Context()
-    zmq_socket = context.socket(zmq.PUSH)
-    zmq_socket.bind("tcp://127.0.0.1:5557")
+    zmq_socket = context.socket(zmq.REP)
+    zmq_socket.bind("tcp://127.0.0.1:5550")
     try:
         while True:
+            got = zmq_socket.recv_string()
             seed = random.randint(0, 1<<32)
             job = {"q": str(q), "x": str(x), "b": str(b), "C": str(C), "L": str(L), "ncands": str(ncands), "seed": seed}
             zmq_socket.send_json(job)
@@ -42,6 +64,8 @@ if __name__ == "__main__":
         print e
     finally:
         zmq_socket.close()
+
+   
 
 
 
