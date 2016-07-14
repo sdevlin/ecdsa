@@ -6,7 +6,7 @@ load('../ecdsa_utils.sage')
 def BQV(V):
     return abs(sum([CC(e^(2*pi*I*val / q)) for val in V]) / float(len(V)))
 
-trial_id = 7
+trial_id = 534
 conn = sqlite3.connect("../bkz/bkz.db")
 cursor = conn.cursor()
 results = cursor.execute("select * from trials where id = ?", (int(trial_id),))
